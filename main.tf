@@ -153,8 +153,48 @@ resource "azurerm_storage_container" "azure-storage_conainer-1" {
 
 
 
+resource "azurerm_linux_virtual_machine" "azure-linux_virtual_machine-1" {
+  name                = var.az_linux_virtual_machine_1_name
+  resource_group_name = var.az_resource_group_name
+  location            = var.az_location
+  size                = var.az_virtual_machine_1_size
+  admin_username      = var.az_virtual_machine_1_admin_user_name
+  network_interface_ids = [
+    azurerm_network_interface.azure-net_int-1.id,
+  ]
+
+  admin_ssh_key {
+    username   = var.az_virtual_machine_1_admin_user_name
+    public_key = file(var.az_linux_virtual_machine_1_public_key)
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = var.az_virtual_machine_1_storage_account_type
+  }
+
+  source_image_reference {
+    publisher = "bitnami"
+    offer     = "jenkins"
+    sku       = "1-650"
+    version   = "latest"
+  }
+
+identity {
+    type = "SystemAssigned"
+  }
+
+  tags = {
+    "ResourceType" = "Virtual Machine"
+    "Environment"  = var.az_tag_environment
+  }
+}
+
+
+/*
+
 resource "azurerm_windows_virtual_machine" "azure-windows_virtual_machine-1" {
-  name                = var.az_virtual_machine_1_name
+  name                = var.az_windows_virtual_machine_1_name
   resource_group_name = var.az_resource_group_name
   location            = var.az_location
   size                = var.az_virtual_machine_1_size
@@ -187,5 +227,4 @@ resource "azurerm_windows_virtual_machine" "azure-windows_virtual_machine-1" {
 }
 
 
-
-
+*/

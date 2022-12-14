@@ -115,7 +115,12 @@ variable "az_public_ip_1_sku" {
 
 #Variables for Azure Virtual Machine(s) -------------------------
 
-variable "az_virtual_machine_1_name" {
+variable "az_windows_virtual_machine_1_name" {
+    type        = string
+    description = "Name of Virtual Machine 1."
+}
+
+variable "az_linux_virtual_machine_1_name" {
     type        = string
     description = "Name of Virtual Machine 1."
 }
@@ -131,6 +136,12 @@ variable "az_virtual_machine_1_admin_user_name" {
 }
 
 variable "az_virtual_machine_1_admin_user_password" {
+    type        = string
+    description = "Password of the admin user for Virtual Machine 1."
+    sensitive   = true
+}
+
+variable "az_linux_virtual_machine_1_public_key" {
     type        = string
     description = "Password of the admin user for Virtual Machine 1."
     sensitive   = true

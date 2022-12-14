@@ -1,6 +1,6 @@
-# DEMO Project
+# TERRAFORM - Azure resources
 
-This GitHub repo contains my first demo project. This project uses Terraform to build resources in the Azure cloud.
+This GitHub repo contains Terraform config files to build Azure resources needed to run a Jenkins server so I can learn and practice.
 
 >Note: This is not meant for production!!!
 
@@ -9,14 +9,13 @@ This GitHub repo contains my first demo project. This project uses Terraform to 
 
 | Name | Version |
 |------|---------|
-| Azure | 3.20.0 |
-| Kubernetes | 2.13.1 |
-| Helm | 2.6.0 |
+| azure | 3.20.0 |
 
 
 ### Deployment Instructions
 * Clone this repository
 * Edit ```terraform.tfvars``` to match your values.
+* Delete the ```.tf``` files that contain resources that you don't need.
 * Run ```terraform init``` to download the Azure provider.
 * Run ```terraform plan``` to view the plan.
 * Run ```terraform apply``` and wait a couple of minutes until the resources created in the Azure cloud.
@@ -24,12 +23,14 @@ This GitHub repo contains my first demo project. This project uses Terraform to 
 
 ## Resources used and links to the relevant Terraform websites where you can find more information about further options.
 
-| Name and link to the Terraform website | Resource Type |
+| Name | Type |
 |------|------|
-| [azurerm_resource_group.azure-rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | Resource Group |
-| [azurerm_virtual_network.azure-vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) | Virtual Network |
-| [azurerm_subnet.azure-subnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) | Subnet |
-| [azurerm_kubernetes_cluster.aks](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster) | Kubernetes Services |
-| [azurerm_role_assignment.role_acrpull](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | Role Assignemt |
-| [azurerm_container_registry.acr](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/container_registry) | Container Registry |
-
+| [azurerm_resource_group.azure-rg](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group) | resource |
+| [azurerm_virtual_network.azure-vnet](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/virtual_network) | resource |
+| [azurerm_subnet.azure-subnet-1/2](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet) | resource |
+| [azurerm_network_security_group.azure-nsg-1/2](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_security_group) | resource |
+| [azurerm_subnet_network_security_group_association.azure-nsg_1_association](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/subnet_network_security_group_association) | resource |
+| [azurerm_network_interface.azure-net_int-1](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_interface) | resource |
+| [azurerm_public_ip.azure-public_ip-1](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/public_ip) | resource |
+| [azurerm_windows_virtual_machine.azure-windows_virtual_machine-1](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/windows_virtual_machine) | resource |
+| [azurerm_storage_account.azure-storage_account-1](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account) | resource |
