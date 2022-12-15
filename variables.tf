@@ -113,47 +113,6 @@ variable "az_public_ip_1_sku" {
 
 
 
-#Variables for Azure Virtual Machine(s) -------------------------
-
-variable "az_windows_virtual_machine_1_name" {
-    type        = string
-    description = "Name of Virtual Machine 1."
-}
-
-variable "az_linux_virtual_machine_1_name" {
-    type        = string
-    description = "Name of Virtual Machine 1."
-}
-
-variable "az_virtual_machine_1_size" {
-    type        = string
-    description = "Name of Virtual Machine 1."
-}
-
-variable "az_virtual_machine_1_admin_user_name" {
-    type        = string
-    description = "Name of the admin user for Virtual Machine 1."
-}
-
-variable "az_virtual_machine_1_admin_user_password" {
-    type        = string
-    description = "Password of the admin user for Virtual Machine 1."
-    sensitive   = true
-}
-
-variable "az_linux_virtual_machine_1_public_key" {
-    type        = string
-    description = "Password of the admin user for Virtual Machine 1."
-    sensitive   = true
-}
-
-variable "az_virtual_machine_1_storage_account_type" {
-    type        = string
-    description = "Storage account type for Virtual Machine 1. (Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS)"
-}
-
-
-
 # Variables for the Azure Storage Account(s) -------------------------
 
 variable "az_storage_account_1_name" {
@@ -202,7 +161,49 @@ variable "az_storage_container_1_access_type" {
 
 
 
+#Variables for Azure Virtual Machine(s) -------------------------
 
+variable "az_windows_virtual_machine_1_name" {
+    type        = string
+    description = "Name of Virtual Machine 1."
+}
+
+variable "az_linux_virtual_machine_1_name" {
+    type        = string
+    description = "Name of Virtual Machine 1."
+}
+
+variable "az_linux_virtual_machine_1_computer_name" {
+    type        = string
+    description = "Computer Name of Virtual Machine 1."
+}
+
+variable "az_virtual_machine_1_size" {
+    type        = string
+    description = "Name of Virtual Machine 1."
+}
+
+variable "az_virtual_machine_1_admin_user_name" {
+    type        = string
+    description = "Name of the admin user for Virtual Machine 1."
+}
+
+variable "az_virtual_machine_1_admin_user_password" {
+    type        = string
+    description = "Password of the admin user for Virtual Machine 1."
+    sensitive   = true
+}
+
+variable "az_linux_virtual_machine_1_public_key" {
+    type        = string
+    description = "Password of the admin user for Virtual Machine 1."
+    sensitive   = true
+}
+
+variable "az_virtual_machine_1_storage_account_type" {
+    type        = string
+    description = "Storage account type for Virtual Machine 1. (Standard_LRS, StandardSSD_LRS, Premium_LRS, StandardSSD_ZRS and Premium_ZRS)"
+}
 
 
 

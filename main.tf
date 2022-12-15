@@ -1,4 +1,4 @@
-resource "azurerm_resource_group" "aks-rg" {
+resource "azurerm_resource_group" "azure-jenkins-rg" {
   location = var.az_location
   name     = var.az_resource_group_name
   
@@ -8,12 +8,12 @@ resource "azurerm_resource_group" "aks-rg" {
   }
 }
 
-resource "azurerm_virtual_network" "aks-vnet" {
+resource "azurerm_virtual_network" "azure-jenkins-vnet" {
   name                = var.az_virtual_network_name
   resource_group_name = var.az_resource_group_name
   location            = var.az_location
   address_space       = [var.az_virtual_network_address_space]
-  depends_on          = [azurerm_resource_group.aks-rg]
+  depends_on          = [azurerm_resource_group.azure-jenkins-rg]
 
   tags = {
     "ResourceType" = "Virtual Network"
@@ -21,12 +21,12 @@ resource "azurerm_virtual_network" "aks-vnet" {
   }  
 }
 
-resource "azurerm_subnet" "aks-subnet" {
+resource "azurerm_subnet" "azure-subnet-1" {
   name                 = var.az_subnet_1_name
   resource_group_name  = var.az_resource_group_name
   virtual_network_name = var.az_virtual_network_name
   address_prefixes     = [var.az_subnet_1_address_prefix]
-  depends_on           = [azurerm_virtual_network.aks-vnet]
+  depends_on           = [azurerm_virtual_network.azure-jenkins-vnet]
 }
 
 # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_security_group
@@ -35,22 +35,22 @@ resource "azurerm_network_security_group" "azure-nsg-1" {
   name                = var.az_nsg_1_name
   location            = var.az_location
   resource_group_name = var.az_resource_group_name
-  depends_on          = [azurerm_resource_group.azure-rg]
+  depends_on          = [azurerm_resource_group.azure-jenkins-rg]
 
   security_rule {
-    name                       = "Inbound - RDP"
+    name                       = "Inbound - SSH"
     priority                   = 110
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "3389"
+    destination_port_range     = "22"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
 
   security_rule {
-    name                       = "Inbound - Port 8080"
+    name                       = "Inbound - Jenkins - Port 8080"
     priority                   = 111
     direction                  = "Inbound"
     access                     = "Allow"
@@ -75,7 +75,7 @@ resource "azurerm_public_ip" "azure-public_ip-1" {
   resource_group_name          = var.az_resource_group_name
   allocation_method            = var.az_public_ip_1_type
   sku                          = var.az_public_ip_1_sku
-  depends_on                   = [azurerm_resource_group.azure-rg]
+  depends_on                   = [azurerm_resource_group.azure-jenkins-rg]
 
 tags = {
     "ResourceType" = "Public IP"
@@ -90,19 +90,19 @@ resource "azurerm_network_interface" "azure-net_int-1" {
   location            = var.az_location
   resource_group_name = var.az_resource_group_name
   # dns_servers         = ["10.0.0.4", "10.0.0.5"]
-  depends_on          = [azurerm_subnet.azure-subnet-1]
+  depends_on          = [azurerm_subnet.azure-subnet-1, azurerm_public_ip.azure-public_ip-1]
 
   ip_configuration {
     name                          = "Internal_IP-1"
     subnet_id                     = azurerm_subnet.azure-subnet-1.id
     private_ip_address_allocation = "Dynamic"
     # private_ip_address_allocation = "Static"
-    # private_ip_address            = "10.10.1.122"
+    # private_ip_address            = "10.20.1.10"
         
     public_ip_address_id          = azurerm_public_ip.azure-public_ip-1.id
   }
 
-  network_security_group_id       = azurerm_network_security_group.azure-nsg-1.id
+  #network_security_group_id       = azurerm_network_security_group.azure-nsg-1.id
 
   tags = {
     "ResourceType" = "Network Interface"
@@ -112,7 +112,26 @@ resource "azurerm_network_interface" "azure-net_int-1" {
 
 
 
+resource "azurerm_network_interface_security_group_association" "azure-nsg_association-1" {
+  network_interface_id      = azurerm_network_interface.azure-net_int-1.id
+  network_security_group_id = azurerm_network_security_group.azure-nsg-1.id
+}
+
+
+
+# Generate random text for a unique storage account name
+resource "random_id" "azure-random_id" {
+  keepers = {
+    # Generate a new ID only when a new resource group is defined
+    resource_group = azurerm_resource_group.azure-jenkins-rg.name
+  }
+
+  byte_length = 8
+}
+
+
 resource "azurerm_storage_account" "azure-storage_account-1" {
+  #name                     = "bootdiag${random_id.azure-random_id.hex}"
   name                     = var.az_storage_account_1_name
   resource_group_name      = var.az_resource_group_name
   location                 = var.az_location
@@ -125,7 +144,7 @@ resource "azurerm_storage_account" "azure-storage_account-1" {
   # min_tls_version                 = var.az_storage_account_1_min_tls_version
   # allow_nested_items_to_be_public = true
 
-  depends_on               = [azurerm_resource_group.azure-rg]
+  depends_on               = [azurerm_resource_group.azure-jenkins-rg]
 
 /*
  network_rules {
@@ -153,22 +172,27 @@ resource "azurerm_storage_container" "azure-storage_conainer-1" {
 
 
 
+resource "tls_private_key" "ssh_key-1" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+
+
 resource "azurerm_linux_virtual_machine" "azure-linux_virtual_machine-1" {
   name                = var.az_linux_virtual_machine_1_name
   resource_group_name = var.az_resource_group_name
   location            = var.az_location
   size                = var.az_virtual_machine_1_size
-  admin_username      = var.az_virtual_machine_1_admin_user_name
-  network_interface_ids = [
-    azurerm_network_interface.azure-net_int-1.id,
-  ]
-
-  admin_ssh_key {
-    username   = var.az_virtual_machine_1_admin_user_name
-    public_key = file(var.az_linux_virtual_machine_1_public_key)
-  }
+  depends_on          = [azurerm_network_interface.azure-net_int-1, azurerm_storage_account.azure-storage_account-1]
+  
+  network_interface_ids           = [azurerm_network_interface.azure-net_int-1.id]
+  computer_name                   = var.az_linux_virtual_machine_1_computer_name
+  admin_username                  = var.az_virtual_machine_1_admin_user_name
+  disable_password_authentication = true
 
   os_disk {
+    name                 = "OSDisk"
     caching              = "ReadWrite"
     storage_account_type = var.az_virtual_machine_1_storage_account_type
   }
@@ -180,7 +204,23 @@ resource "azurerm_linux_virtual_machine" "azure-linux_virtual_machine-1" {
     version   = "latest"
   }
 
-identity {
+  plan {
+    name  = "1-650"
+    product = "jenkins"
+    publisher = "bitnami"
+  }
+
+  admin_ssh_key {
+    username   = var.az_virtual_machine_1_admin_user_name
+    public_key = tls_private_key.ssh_key-1.public_key_openssh
+    #public_key = file(var.az_linux_virtual_machine_1_public_key)
+  }
+
+  boot_diagnostics {
+    storage_account_uri = azurerm_storage_account.azure-storage_account-1.primary_blob_endpoint
+  }
+
+  identity {
     type = "SystemAssigned"
   }
 
@@ -200,6 +240,8 @@ resource "azurerm_windows_virtual_machine" "azure-windows_virtual_machine-1" {
   size                = var.az_virtual_machine_1_size
   admin_username      = var.az_virtual_machine_1_admin_user_name
   admin_password      = var.az_virtual_machine_1_admin_user_password
+  depends_on          = [azurerm_network_interface.azure-net_int-1]
+  
   network_interface_ids = [
     azurerm_network_interface.azure-net_int-1.id,
   ]
