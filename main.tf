@@ -8,6 +8,7 @@ resource "azurerm_resource_group" "azure-jenkins-rg" {
   }
 }
 
+
 resource "azurerm_virtual_network" "azure-jenkins-vnet" {
   name                = var.az_virtual_network_name
   resource_group_name = var.az_resource_group_name
@@ -21,6 +22,7 @@ resource "azurerm_virtual_network" "azure-jenkins-vnet" {
   }  
 }
 
+
 resource "azurerm_subnet" "azure-subnet-1" {
   name                 = var.az_subnet_1_name
   resource_group_name  = var.az_resource_group_name
@@ -29,7 +31,6 @@ resource "azurerm_subnet" "azure-subnet-1" {
   depends_on           = [azurerm_virtual_network.azure-jenkins-vnet]
 }
 
-# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/network_security_group
 
 resource "azurerm_network_security_group" "azure-nsg-1" {
   name                = var.az_nsg_1_name
@@ -94,15 +95,14 @@ resource "azurerm_network_interface" "azure-net_int-1" {
 
   ip_configuration {
     name                          = "Internal_IP-1"
+    primary                       = true
     subnet_id                     = azurerm_subnet.azure-subnet-1.id
-    private_ip_address_allocation = "Dynamic"
-    # private_ip_address_allocation = "Static"
-    # private_ip_address            = "10.20.1.10"
+    #private_ip_address_allocation = "Dynamic"
+    private_ip_address_allocation = "Static"
+    private_ip_address            = "10.20.1.10"
         
     public_ip_address_id          = azurerm_public_ip.azure-public_ip-1.id
   }
-
-  #network_security_group_id       = azurerm_network_security_group.azure-nsg-1.id
 
   tags = {
     "ResourceType" = "Network Interface"
@@ -205,8 +205,8 @@ resource "azurerm_linux_virtual_machine" "azure-linux_virtual_machine-1" {
   }
 
   plan {
-    name  = "1-650"
-    product = "jenkins"
+    name      = "1-650"
+    product   = "jenkins"
     publisher = "bitnami"
   }
 
@@ -229,44 +229,3 @@ resource "azurerm_linux_virtual_machine" "azure-linux_virtual_machine-1" {
     "Environment"  = var.az_tag_environment
   }
 }
-
-
-/*
-
-resource "azurerm_windows_virtual_machine" "azure-windows_virtual_machine-1" {
-  name                = var.az_windows_virtual_machine_1_name
-  resource_group_name = var.az_resource_group_name
-  location            = var.az_location
-  size                = var.az_virtual_machine_1_size
-  admin_username      = var.az_virtual_machine_1_admin_user_name
-  admin_password      = var.az_virtual_machine_1_admin_user_password
-  depends_on          = [azurerm_network_interface.azure-net_int-1]
-  
-  network_interface_ids = [
-    azurerm_network_interface.azure-net_int-1.id,
-  ]
-
-  os_disk {
-    caching              = "ReadWrite"
-    storage_account_type = var.az_virtual_machine_1_storage_account_type
-  }
-
-  source_image_reference {
-    publisher = "bitnami"
-    offer     = "jenkins"
-    sku       = "1-650"
-    version   = "latest"
-  }
-  
-  identity {
-    type = "SystemAssigned"
-  }
-
-  tags = {
-    "ResourceType" = "Virtual Machine"
-    "Environment"  = var.az_tag_environment
-  }
-}
-
-
-*/
