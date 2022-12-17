@@ -172,9 +172,17 @@ resource "azurerm_storage_container" "azure-storage_conainer-1" {
 
 
 
-resource "tls_private_key" "ssh_key-1" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
+#resource "tls_private_key" "ssh_key-1" {
+#  algorithm = "RSA"
+#  rsa_bits  = 4096
+#}
+
+
+
+resource "azurerm_marketplace_agreement" "azure_marketplace-jenkins" {
+  publisher = "bitnami"
+  offer     = "jenkins"
+  plan      = "1-650"
 }
 
 
@@ -184,12 +192,13 @@ resource "azurerm_linux_virtual_machine" "azure-linux_virtual_machine-1" {
   resource_group_name = var.az_resource_group_name
   location            = var.az_location
   size                = var.az_virtual_machine_1_size
-  depends_on          = [azurerm_network_interface.azure-net_int-1, azurerm_storage_account.azure-storage_account-1]
+  depends_on          = [azurerm_network_interface.azure-net_int-1, azurerm_storage_account.azure-storage_account-1, azurerm_marketplace_agreement.azure_marketplace-jenkins]
   
   network_interface_ids           = [azurerm_network_interface.azure-net_int-1.id]
   computer_name                   = var.az_linux_virtual_machine_1_computer_name
   admin_username                  = var.az_virtual_machine_1_admin_user_name
-  disable_password_authentication = true
+  admin_password                  = var.az_virtual_machine_1_admin_user_password
+  disable_password_authentication = false
 
   os_disk {
     name                 = "OSDisk"

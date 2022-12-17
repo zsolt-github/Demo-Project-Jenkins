@@ -66,7 +66,7 @@ az_linux_virtual_machine_1_name           = "VM-Jenkins-TF"
 az_linux_virtual_machine_1_computer_name  = "Jenkins-TF"
 az_virtual_machine_1_size                 = "Standard_B2s"
 az_virtual_machine_1_admin_user_name      = "adminuser"
-az_virtual_machine_1_admin_user_password  = "Passwords"
+az_virtual_machine_1_admin_user_password  = "AdminPassword-2022"
 az_linux_virtual_machine_1_public_key     = ".ssh/id_rsa.pub"
 az_virtual_machine_1_storage_account_type = "StandardSSD_LRS"
 
