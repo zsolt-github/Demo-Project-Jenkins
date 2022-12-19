@@ -219,11 +219,11 @@ resource "azurerm_linux_virtual_machine" "azure-linux_virtual_machine-1" {
     publisher = "bitnami"
   }
 
-  admin_ssh_key {
-    username   = var.az_virtual_machine_1_admin_user_name
-    public_key = tls_private_key.ssh_key-1.public_key_openssh
+  #admin_ssh_key {
+  #  username   = var.az_virtual_machine_1_admin_user_name
+  #  public_key = tls_private_key.ssh_key-1.public_key_openssh
     #public_key = file(var.az_linux_virtual_machine_1_public_key)
-  }
+  #}
 
   boot_diagnostics {
     storage_account_uri = azurerm_storage_account.azure-storage_account-1.primary_blob_endpoint

@@ -5,7 +5,7 @@ resource "cloudflare_record" "cloudflare-a_record_jenkins" {
   name       = "jenkins"
   value      = azurerm_linux_virtual_machine.azure-linux_virtual_machine-1.public_ip_address
   type       = "A"
-  proxied    = true
+  proxied    = false
   
   depends_on = [azurerm_public_ip.azure-public_ip-1]
 }
