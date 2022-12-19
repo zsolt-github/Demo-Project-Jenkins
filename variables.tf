@@ -220,3 +220,13 @@ variable "jenkins_admin_password" {
   type        = string
   description = "Admin password of the Jenkins."
 }
+
+
+
+# --- Variables for Cloudflare -------------------------
+
+variable "cloudflare_zone_id" {
+  type        = string
+  description = "Cloudflare Zone ID."
+}
+

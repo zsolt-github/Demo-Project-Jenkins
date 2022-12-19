@@ -72,8 +72,7 @@ az_virtual_machine_1_storage_account_type = "StandardSSD_LRS"
 
 
 
-
-
 # --- Jenkins -------------------------
- jenkins_admin_user = "admin"
+ jenkins_admin_user     = "admin"
  jenkins_admin_password = "adminpassword"
+
